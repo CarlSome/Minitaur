@@ -1,8 +1,6 @@
 // 发送/接收控制端，一般用一个端口控制就好了
-int RE1 = 4;
-int DE1 = 5;
-int RE2 = 6;   // 接收使能端:0为接收状态
-int DE2 = 7;   // 发送使能端:1为发送状态
+int RE1 = 4;  // 接收使能端:0为接收状态
+int DE1 = 5;  // 发送使能端:1为发送状态 
 
 // 控制指令
 char command; // 指令
@@ -14,14 +12,16 @@ byte positionCommand[14] = {0x3e, 0xa3, 0x01, 0x08, 0xea, 0x00, 0x00, 0x00, 0x00
 byte stopCommand[5] = {0x3e, 0x80, 0x01, 0x00, 0xBF}; // 关闭电机命令
 byte testCommand[10] = {0x3e, 0xa2, 0x01, 0x04, 0xe5, 0x28, 0x23, 0x00, 0x00, 0x4B};  // 测试命令：匀速转动
 
+// 测试指令
+byte positionCommand1[14] = {0x3e, 0xa3, 0x01, 0x08, 0xea, 0x28, 0x23, 0x00, 0x00, 0x00,0x00,0x00,0x00, 0x4b}; // 位置闭环控制命令:旋转至90度位置
+byte positionCommand2[14] = {0x3e, 0xa3, 0x01, 0x08, 0xea, 0xD0, 0x07, 0x00, 0x00, 0x00,0x00,0x00,0x00, 0xD7}; // 位置闭环控制命令:旋转至20度位置
+
 // 回复信号
 byte result[8];
 
 void setup() {
   pinMode(RE1, OUTPUT);
   pinMode(DE1, OUTPUT);
-  pinMode(RE2, OUTPUT);
-  pinMode(DE2, OUTPUT);
   Serial.begin(115200); // 与电脑通讯的串口
   Serial1.begin(115200); // 与485通讯的串口
 
@@ -95,6 +95,29 @@ void loop() {
     else if(command == '2') {
       Serial.println("命令：匀速转动");
       Serial1.write(testCommand, 10);
+    }
+    else if(command == 't') {
+      Serial1.write(positionCommand1, 14);
+      delay(500);
+      Serial1.write(positionCommand2, 14);
+      delay(500);
+      Serial1.write(positionCommand1, 14);
+      delay(500);
+      Serial1.write(positionCommand2, 14);
+      delay(500);
+      Serial1.write(positionCommand1, 14);
+    }
+    else if(command == 'p') {
+      Serial1.write(positionCommand1, 14);
+      delay(500);
+      Serial1.write(positionCommand2, 14);
+      delay(500);
+      Serial1.write(positionCommand1, 14);
+      delay(500);
+      Serial1.write(positionCommand2, 14);
+      delay(500);
+      Serial1.write(positionCommand1, 14);
+      Serial.println("Msg from Arduino");
     }
   }
   
